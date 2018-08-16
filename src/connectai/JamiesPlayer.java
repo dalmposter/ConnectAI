@@ -38,4 +38,24 @@ public class JamiesPlayer extends Player
         
         ConnectAI.getGUI().buttonClick(moves.get(rand));
     }
+    
+    
+    //use these to write to your database
+    @Override
+    protected void won()
+    {
+        
+    }
+    
+    @Override
+    protected void lost()
+    {
+    
+    }
+    
+    @Override
+    protected void drew()
+    {
+        
+    }
 }
