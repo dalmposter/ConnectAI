@@ -19,6 +19,11 @@ public class DomsPlayer extends Player
         ai = isAi;
     }
     
+    private int[] forceMove(int[][] boardState)
+    {
+        return null;
+    }
+    
     @Override
     protected void takeTurn(int[][] boardState)
     {
@@ -39,5 +44,24 @@ public class DomsPlayer extends Player
         int rand = gen.nextInt(moves.size());
         
         ConnectAI.getGUI().buttonClick(moves.get(rand));
+    }
+    
+    //use these to write to your database
+    @Override
+    protected void won()
+    {
+        
+    }
+    
+    @Override
+    protected void lost()
+    {
+    
+    }
+    
+    @Override
+    protected void drew()
+    {
+        
     }
 }

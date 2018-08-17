@@ -12,6 +12,10 @@ import java.util.*;
  */
 public class JamiesPlayer extends Player
 {    
+    //there are public and static methods in the Board class to convert between
+    //the format the board is stored in internally and the format I intend to
+    //store the board states in the db in
+    
     JamiesPlayer(boolean isAi)
     {
         ai = isAi;
