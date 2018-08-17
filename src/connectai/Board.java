@@ -100,8 +100,6 @@ public class Board
             {
                 //now we're moving a 4x4 grid around the board
                 //future checks will be within this grid
-                int diagonal1 = 0;
-                int diagonal2 = 0;
                 
                 for(int x = 0; x < 4; x++)
                 {
@@ -132,8 +130,8 @@ public class Board
                     }
                 }
                 
-                diagonal1 = board[i][j] + board[i + 1][j + 1] + board[i + 2][j + 2] + board[i + 3][j + 3];
-                diagonal2 = board[i][j + 3] + board[i + 1][j + 2] + board[i + 2][j + 1] + board[i + 3][j];
+                int diagonal1 = board[i][j] + board[i + 1][j + 1] + board[i + 2][j + 2] + board[i + 3][j + 3];
+                int diagonal2 = board[i][j + 3] + board[i + 1][j + 2] + board[i + 2][j + 1] + board[i + 3][j];
                 
                 if(diagonal1 == 4 || diagonal2 == 4)
                 {

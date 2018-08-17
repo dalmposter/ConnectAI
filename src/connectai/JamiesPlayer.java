@@ -16,6 +16,8 @@ public class JamiesPlayer extends Player
     //the format the board is stored in internally and the format I intend to
     //store the board states in the db in
     
+    //your hard-coded piece is 1. This means that a 1 in the board array means your piece
+    
     JamiesPlayer(boolean isAi)
     {
         ai = isAi;
