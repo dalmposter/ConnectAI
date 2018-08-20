@@ -34,7 +34,7 @@ public class Board
             }
         }
         
-        System.out.println("New board created. dbBoard : " + dbBoard);
+        //System.out.println("New board created. dbBoard : " + dbBoard);
     }
     
     //convert an x and y coordinate to a position in the dbBoard String
@@ -60,7 +60,7 @@ public class Board
     public boolean makePlay(int x, int piece)
     {
         Color col;
-        System.out.println("makePlay(" + x + ", " + piece + ") called");
+        //System.out.println("makePlay(" + x + ", " + piece + ") called");
         
         if(piece == 1)
         {

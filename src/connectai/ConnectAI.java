@@ -16,8 +16,8 @@ public class ConnectAI {
     private static JLabel p1Score;
     private static JLabel p2Score;
     
-    private static JamiesPlayer p1;
-    private static DomsPlayer p2;
+    private static Player p1;
+    private static Player p2;
     private static Board board;
     private static GUI gui;
     
@@ -48,7 +48,7 @@ public class ConnectAI {
     
     public static void switchPlayer()
     {
-        System.out.println("switchPlayer() called, now : " + player1);
+        //System.out.println("switchPlayer() called, now : " + player1);
         player1 = !player1;
     }
     
@@ -103,12 +103,40 @@ public class ConnectAI {
         }
     }
     
+    public static void random1(boolean ai)
+    {
+        p1 = new RandomPlayer(ai);
+    }
+    
+    public static void random2(boolean ai)
+    {
+        p2 = new RandomPlayer(ai);
+    }
+    
     public static void changeSettings(boolean p1Ai, boolean p2Ai, int maxG)
     {
         System.out.println("changeSettings(" + p1Ai + ", " + p2Ai + ") called");
         
-        p1 = new JamiesPlayer(p1Ai);
-        p2 = new DomsPlayer(p2Ai);
+        if(p1 instanceof JamiesPlayer)
+        {
+            p1 = new JamiesPlayer(p1Ai);
+            System.out.println("p1 is JamiesPLayer");
+        }
+        else
+        {
+            p1 = new RandomPlayer(p1Ai);
+            System.out.println("p1 is RandomPlayer");
+        }
+        if(p2 instanceof DomsPlayer)
+        {
+            p2 = new DomsPlayer(p2Ai);
+            System.out.println("p2 is DomsPlayer");
+        }
+        else
+        {
+            p2 = new RandomPlayer(p2Ai);
+            System.out.println("p2 is RandomPlayer");
+        }
         
         reset();
         gameCount = 0;

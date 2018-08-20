@@ -118,6 +118,10 @@ public class GUI extends javax.swing.JFrame {
         cpuThink = new javax.swing.JTextField();
         cpuIterations = new javax.swing.JTextField();
         p1Score4 = new javax.swing.JLabel();
+        p1Score5 = new javax.swing.JLabel();
+        Random2 = new javax.swing.JCheckBox();
+        Random1 = new javax.swing.JCheckBox();
+        p1Score6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 153));
@@ -784,6 +788,26 @@ public class GUI extends javax.swing.JFrame {
         p1Score4.setForeground(new java.awt.Color(255, 255, 255));
         p1Score4.setText("Max Iterations:");
 
+        p1Score5.setFont(new java.awt.Font("Trebuchet MS", 1, 18)); // NOI18N
+        p1Score5.setForeground(new java.awt.Color(255, 255, 255));
+        p1Score5.setText("Random?");
+
+        Random2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Random2ActionPerformed(evt);
+            }
+        });
+
+        Random1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Random1ActionPerformed(evt);
+            }
+        });
+
+        p1Score6.setFont(new java.awt.Font("Trebuchet MS", 1, 18)); // NOI18N
+        p1Score6.setForeground(new java.awt.Color(255, 255, 255));
+        p1Score6.setText("Random?");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -845,8 +869,33 @@ public class GUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(tile65, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(tile60, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(p1Score5)
+                                .addGap(18, 18, 18)
+                                .addComponent(Random2))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(tile62, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(tile63, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(p1Score3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(cpuThink, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(p1Score4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(cpuIterations, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(0, 27, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(tile65, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(p1Score6)
+                                .addGap(18, 18, 18)
+                                .addComponent(Random1))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(tile61, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -857,7 +906,6 @@ public class GUI extends javax.swing.JFrame {
                                         .addComponent(p1Score2)
                                         .addGap(18, 18, 18)
                                         .addComponent(CPU2))))
-                            .addComponent(tile60, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(play6, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(tile64, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -869,21 +917,7 @@ public class GUI extends javax.swing.JFrame {
                                         .addComponent(CPU1))
                                     .addComponent(p1Name)
                                     .addComponent(p1Score))))
-                        .addContainerGap(62, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(tile62, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(tile63, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(p1Score3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(cpuThink, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(p1Score4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(cpuIterations, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -910,7 +944,11 @@ public class GUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tile01, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(tile65, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(tile65, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(p1Score6)
+                                .addComponent(Random1)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(tile64, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1013,7 +1051,9 @@ public class GUI extends javax.swing.JFrame {
                         .addComponent(tile40, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(tile60, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(tile50, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                            .addComponent(tile50, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(p1Score5)
+                    .addComponent(Random2)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -1043,7 +1083,7 @@ public class GUI extends javax.swing.JFrame {
             {
                 //successfully made play
                 success = true;
-                System.out.println("Play successful");
+                //System.out.println("Play successful");
                 
                 win = ConnectAI.getBoard().checkWin();
                 //p1 wins
@@ -1081,7 +1121,7 @@ public class GUI extends javax.swing.JFrame {
             {
                 //successfully made play
                 success = true;
-                System.out.println("Play successful");
+                //System.out.println("Play successful");
                 win = ConnectAI.getBoard().checkWin();
                 //p1 wins
                 if(win == 1)
@@ -1123,7 +1163,7 @@ public class GUI extends javax.swing.JFrame {
     {
         ConnectAI.switchPlayer();
 
-        System.out.println("player1? : " + ConnectAI.getPlayer() +  ", player1ai? : " + ConnectAI.getPlayer1().ai + ", player2ai? : " + ConnectAI.getPlayer2().ai);
+        //System.out.println("player1? : " + ConnectAI.getPlayer() +  ", player1ai? : " + ConnectAI.getPlayer1().ai + ", player2ai? : " + ConnectAI.getPlayer2().ai);
 
         if(ConnectAI.getPlayer() && ConnectAI.getPlayer1().ai && !ConnectAI.getPlayer2().ai)
         {
@@ -1177,6 +1217,14 @@ public class GUI extends javax.swing.JFrame {
         ConnectAI.changeSettings(CPU1.isSelected(), CPU2.isSelected(), Integer.valueOf(cpuIterations.getText()));
     }//GEN-LAST:event_cpuIterationsActionPerformed
 
+    private void Random2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Random2ActionPerformed
+        ConnectAI.random2(CPU2.isSelected());
+    }//GEN-LAST:event_Random2ActionPerformed
+
+    private void Random1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Random1ActionPerformed
+        ConnectAI.random1(CPU1.isSelected());
+    }//GEN-LAST:event_Random1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1215,6 +1263,8 @@ public class GUI extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox CPU1;
     private javax.swing.JCheckBox CPU2;
+    private javax.swing.JCheckBox Random1;
+    private javax.swing.JCheckBox Random2;
     private javax.swing.JTextField cpuIterations;
     private javax.swing.JTextField cpuThink;
     private javax.swing.JButton jButton1;
@@ -1225,6 +1275,8 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JLabel p1Score2;
     private javax.swing.JLabel p1Score3;
     private javax.swing.JLabel p1Score4;
+    private javax.swing.JLabel p1Score5;
+    private javax.swing.JLabel p1Score6;
     private javax.swing.JLabel p2Name;
     private javax.swing.JLabel p2Score;
     private javax.swing.JButton play0;
