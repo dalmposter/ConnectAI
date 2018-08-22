@@ -17,9 +17,13 @@ public class RandomPlayer extends Player
 
     ArrayList<ArrayList<String>> moveLog = new ArrayList<>();
     
-    RandomPlayer(boolean isAi)
+    RandomPlayer(boolean isAi, ConnectAI thread, String pieceIn)
     {
+        controller = thread;
         ai = isAi;
+        piece = pieceIn;
+        if("5".equals(piece)) opponentPiece = "1";
+        else opponentPiece = "5";
     }
     
     //determine if the ai needs to play somewhere to win or block a win
@@ -29,8 +33,8 @@ public class RandomPlayer extends Player
     //will be THE empty tile in the row of 4
     private int forceMove(int[][] board)
     {
-        int forceIndex = -1;
-        //System.out.println("forceMove(" + board + ") called");
+        //System.out.println("forceMove(" + Arrays.deepToString(board) + ") called");
+        int forceLose = -1;
         
         for(int i = 0; i < board.length - 3; i++)
         {
@@ -39,144 +43,127 @@ public class RandomPlayer extends Player
             {
                 //now we're moving a 4x4 grid around the board
                 //future checks will be within this grid
-                
                 //System.out.println("Analysed one 4x4 grid");
-                
-                for(int x = 0; x < 4; x++)
-                {
-                    int horizontal = 0;
-                    int vertical = 0;
-                    
-                    int forceHor = -1;
-                    int forceVer = -1;
-                    
-                    //System.out.println("x for loop");
-                    
-                    for(int y = 0; y < 4; y++)
-                    {
-                        //System.out.println("y for loop");
-                        //boolean to determine whether the imminent victory detected can actually
-                        //occur (the tile below the required play is full)
-                        boolean canCapitalise = false;
-                        if(x + j == 0)
-                        {
-                            canCapitalise = true;
-                        }
-                        else if(board[y + i][x + j - 1] != 0)
-                        {
-                            canCapitalise = true;
-                        }
-                        if(board[y + i][x + j] == 0 && canCapitalise)
-                        {
-                            forceHor = y + i;
-                        }
-                        else horizontal += board[y + i][x + j];
-                        
-                        canCapitalise = false;
-                        if(y + j == 0)
-                        {
-                            canCapitalise = true;
-                        }
-                        else if(board[x + i][y + j - 1] != 0)
-                        {
-                            canCapitalise = true;
-                        }
-                        if(board[x + i][y + j] == 0 && canCapitalise)
-                        {
-                            forceVer = x + i;
-                        }
-                        else vertical += board[x + i][y + j];
-                    }
-                    
-                    if(horizontal == 15 && forceHor > -1)
-                    {
-                        //System.out.println("DomsAI: Was forced to play in " + forceHor + " to win");
-                        return forceHor;
-                    }
-                    if(vertical == 15 && forceVer > -1)
-                    {
-                        //System.out.println("DomsAI: Was forced to play in " + forceHor + " to win");
-                        return forceVer;
-                    }
-                    if(horizontal == 3 && forceHor > -1)
-                    {
-                        //System.out.println("DomsAI: May be forced to play in " + forceHor + " to not lose");
-                        forceIndex = forceHor;
-                    }
-                    else if(vertical == 3 && forceVer > -1)
-                    {
-                        //System.out.println("DomsAI: May be forced to play in " + forceHor + " to not lose");
-                        forceIndex = forceVer;
-                    }
-                }
-                
                 int diagonal1 = 0;
                 int diagonal2 = 0;
-                
                 int forceDia1 = -1;
                 int forceDia2 = -1;
                 
-                for(int b = 0; b < 4; b++)
+                for(int x = 0; x < 4; x++)
                 {
-                    //System.out.println("b for loop");
+                    int vertical = 0;
+                    int horizontal = 0;
+                    int forceHor = -1;
                     
-                    boolean canCapitalise = false;
+                    //do diagonal checks in the outer 2 loops as there are only
+                    //2 valid diagonal victories per 4x4 grid
+                    diagonal1 += board[i + x][j + x];
+                    if(board[i + x][j + x] == 0)
+                    {
+                        if(forceDia1 == -1)
+                        {
+                            if(j + x == 0)
+                            {
+                                forceDia1 = i + x;
+                            }
+                            else if(board[i + x][j + x - 1] != 0)
+                            {
+                                forceDia1 = i + x;
+                            }
+                        }
+                        else forceDia1 = -2;
+                    }
                     
-                    if(j + b == 0)
+                    diagonal2 += board[i + x][j + 3 - x];
+                    if(board[i + x][j + 3 - x] == 0)
                     {
-                        canCapitalise = true;
+                        if(forceDia2 == -1)
+                        {
+                            if(j + 3 - x == 0)
+                            {
+                                forceDia2 = i + x;
+                            }
+                            else if(board[i + x][j + 3 - x - 1] != 0)
+                            {
+                                forceDia2 = i + x;
+                            }
+                        }
+                        else forceDia2 = -2;
                     }
-                    else if(board[i + b][j + b - 1] != 0)
-                    {
-                        canCapitalise = true;
-                    }
-                    if(board[i + b][j + b] == 0 && canCapitalise)
-                    {
-                        forceDia1 = i + b;
-                    }
-                    else diagonal1 += board[i + b][j + b];
                     
-                    canCapitalise = false;
-                    
-                    if(j + 3 - b == 0)
+                    for(int y = 0; y < 4; y++)
                     {
-                        canCapitalise = true;
+                        //moving vertically
+                        vertical += board[i + x][j + y];
+                        //moving horizontal
+                        horizontal += board[i + y][j + x];
+                        //if there is exactly 1 empty tile horizontally we must store where it is
+                        //vertically there is no need as only one move index could satisfy it
+                        //in theory no need to check if the tile above 3 vertically as we are only
+                        //considering 4 tiles vertically and checking if exactly 3 are one colour
+                        //and the other is empty (return here if this causes problems)
+                        if(board[i + y][j + x] == 0)
+                        {
+                            if(forceHor == -1)
+                            {
+                                if(j + x == 0)
+                                {
+                                    forceHor = i + y;
+                                }
+                                else if(board[i + y][j + x - 1] != 0)
+                                {
+                                    forceHor = i + y;
+                                }
+                            }
+                            else forceHor = -2;
+                        }
                     }
-                    else if(board[i + b][j + 3 - b] != 0)
+                    if(horizontal == 3 * Integer.valueOf(piece) && forceHor > -1)
                     {
-                        canCapitalise = true;
+                        //System.out.println("RandomPlayer: can win with " + forceHor);
+                        return forceHor;
                     }
-                    if(board[i + b][j + 3 - b] == 0 && canCapitalise)
+                    if(vertical == 3 * Integer.valueOf(piece))
                     {
-                        forceDia2 = i + b;
+                        //System.out.println("RandomPlayer: can win with " + String.valueOf(i + x));
+                        return i + x;
                     }
-                    else diagonal2 += board[i + b][j + 3 - b];
+                    if(horizontal == 3 * Integer.valueOf(opponentPiece) && forceHor > -1)
+                    {
+                        //System.out.println("RandomPlayer: may be forced to play in " + forceHor);
+                        forceLose = forceHor;
+                    }
+                    else if(vertical == 3 * Integer.valueOf(opponentPiece))
+                    {
+                        //System.out.println("RandomPlayer: can lose with " + String.valueOf(i + x));
+                        forceLose = i + x;
+                    }
                 }
                 
-                if(diagonal1 == 15)
+                if(diagonal1 == 3 * Integer.valueOf(piece) && forceDia1 > -1)
                 {
-                    //System.out.println("DomsAI: Was forced to play in " + forceDia1 + " to win");
+                    //System.out.println("RandomPlayer: can win with " + forceDia1);
                     return forceDia1;
                 }
-                if(diagonal2 == 15)
+                if(diagonal2 == 3 * Integer.valueOf(piece) && forceDia1 > -1)
                 {
-                    //System.out.println("DomsAI: Was forced to play in " + forceDia2 + " to win");
+                    //System.out.println("RandomPlayer: can win with " + forceDia2);
                     return forceDia2;
                 }
-                if(diagonal1 == 3)
+                if(diagonal1 == 3 * Integer.valueOf(opponentPiece) && forceDia1 > -1)
                 {
-                    //System.out.println("DomsAI: May be forced to play in " + forceDia1 + " to not lose");
-                    forceIndex = forceDia1;
+                    //System.out.println("RandomPlayer: can lose with " + forceDia1);
+                    forceLose = forceDia1;
                 }
-                if(diagonal2 == 3)
+                else if(diagonal2 == 3 * Integer.valueOf(opponentPiece) && forceDia2 > -1)
                 {
-                    //System.out.println("DomsAI: May be forced to play in " + forceDia2 + " to not lose");
-                    forceIndex = forceDia2;
+                    //System.out.println("RandomPlayer: can lose with " + forceDia2);
+                    forceLose = forceDia2;
                 }
             }
         }
-        
-        return forceIndex;
+        //System.out.println("forceMove() didn't find a win and returned " + forceLose);
+        return forceLose;
     }
     
     private String toDbBoard(int[][] boardState)
@@ -203,7 +190,7 @@ public class RandomPlayer extends Player
         
         moveLog.add(entry);
         
-        ConnectAI.getGUI().buttonClick(index);
+        controller.getGUI().buttonClick(index);
         //TODO write the move to the tracker
     }
     
@@ -310,7 +297,7 @@ public class RandomPlayer extends Player
 //        }
 //        catch(Exception e)
 //        {
-//            System.out.println("EXCEPTION : " + e);
+//            //System.out.println("EXCEPTION : " + e);
 //        }
 //        finally
 //        {
@@ -368,7 +355,7 @@ public class RandomPlayer extends Player
 //            if(ai2) writeDB(-1, moveTracker2, "1");
 //        }
 //        
-//        System.out.println("Finished Game : " + (gameCount + 1) + " result : " + result);
+//        //System.out.println("Finished Game : " + (gameCount + 1) + " result : " + result);
 //        
 //        reset();
 //    }

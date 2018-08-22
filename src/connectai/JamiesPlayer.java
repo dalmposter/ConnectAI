@@ -18,9 +18,11 @@ public class JamiesPlayer extends Player
     
     //your hard-coded piece is 1. This means that a 1 in the board array means your piece
     
-    JamiesPlayer(boolean isAi)
+    JamiesPlayer(boolean isAi, ConnectAI thread, String pieceIn)
     {
         ai = isAi;
+        controller = thread;
+        piece = pieceIn;
     }
     
     @Override
@@ -42,7 +44,7 @@ public class JamiesPlayer extends Player
         Random gen = new Random();
         int rand = gen.nextInt(moves.size());
         
-        ConnectAI.getGUI().buttonClick(moves.get(rand));
+        controller.getGUI().buttonClick(moves.get(rand));
     }
     
     

@@ -11,11 +11,19 @@ package connectai;
  */
 public class Player
 {
+    protected ConnectAI controller;
     protected boolean ai;
     protected int score;
+    protected String piece;
+    protected String opponentPiece;
     
     //NOTES:
     //call ConnectAI.getGUI().buttonClick(x) where x is the column you wish the play in
+    
+    public String getPiece()
+    {
+        return piece;
+    }
     
     public void checkPlay(int[][] boardState)
     {

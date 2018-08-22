@@ -14,14 +14,21 @@ import javax.swing.*;
  */
 public class Board
 {
+    private ConnectAI controller;
     //array representation of board, 0 = empty, 1 = red, 5 = yellow
-    int[][] board;
+    private int[][] board;
     //String represenation of board, 0 = empty, 1 = red, 5 = yellow
-    String dbBoard;
+    private String dbBoard;
+    
+    public int[][] getBoard()
+    {
+        return board;
+    }
     
     //Board constructor, initialises variables
-    Board()
+    Board(ConnectAI thread)
     {
+        controller = thread;
         board = new int[7][6];
         dbBoard = "";
         
@@ -74,7 +81,7 @@ public class Board
                 if(board[x][i] == 0)
                 {
                     board[x][i] = piece;
-                    JPanel tile = ConnectAI.getGUI().getComponentByName("tile" + String.valueOf(x) + String.valueOf(i));
+                    JPanel tile = controller.getGUI().getComponentByName("tile" + String.valueOf(x) + String.valueOf(i));
                     tile.setBackground(col);
                     return true;
                 }

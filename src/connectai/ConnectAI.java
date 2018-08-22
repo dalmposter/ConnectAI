@@ -6,66 +6,164 @@
 package connectai;
 
 import javax.swing.*;
+import java.util.*;
 
 /**
  *
  * @author dominic.cousins
  */
-public class ConnectAI {
+public class ConnectAI implements Runnable {
 
-    private static JLabel p1Score;
-    private static JLabel p2Score;
+    private static final int MAX_THREADS = 3;
+    private static final int LEARNING_GAMES = 10000;
+    private static final boolean LEARNING = true;
+    private Thread t;
+    private String threadName;
+    private final boolean even;
+    public static PlayerController master;
     
-    private static Player p1;
-    private static Player p2;
-    private static Board board;
-    private static GUI gui;
+    public static ArrayList<ConnectAI> threads = new ArrayList<>();
     
-    private static int maxGames = 1;
-    private static int gameCount = 0;
+    private JLabel p1Score;
+    private JLabel p2Score;
     
-    private static boolean player1 = true;
+    private Player p1;
+    private Player p2;
+    private Board board;
+    private GUI gui;
     
-    public static void player1Win()
+    private int maxGames = 1;
+    private int gameCount = 0;
+    
+    private boolean player1 = true;
+    private boolean player1Starts = true;
+    
+    public void player1Win()
     {
         p1.won();
     }
     
-    public static void player2Win()
+    public void player2Win()
     {
         p2.won();
     }
     
-    public static Board getBoard()
+    public Board getBoard()
     {
         return board;
     }
     
-    public static GUI getGUI()
+    public GUI getGUI()
     {
         return gui;
     }
     
-    public static void switchPlayer()
+    public void switchPlayer()
     {
         //System.out.println("switchPlayer() called, now : " + player1);
         player1 = !player1;
     }
     
-    public static Player getPlayer1()
+    public Player getPlayer1()
     {
         return p1;
     }
     
-    public static Player getPlayer2()
+    public Player getPlayer2()
     {
         return p2;
     }
     
     //returns true if it's player1's turn
-    public static boolean getPlayer()
+    public boolean getPlayer()
     {
         return player1;
+    }
+    
+    ConnectAI(String name, boolean ev)
+    {
+        even = ev;
+        this.init(name);
+    }
+    
+    @Override
+    public void run()
+    {
+        System.out.println("Running " + threadName);
+        master.threads++;
+        
+        try
+        {
+            if(p1.ai && getPlayer())
+            {
+                p1.takeTurn(board.getBoard());
+            } 
+            else if (p2.ai && !getPlayer())
+            {
+                p2.takeTurn(board.getBoard());
+            }
+        
+            while(p1.ai && p2.ai && gameCount < maxGames)
+            {
+                if(player1) p1.takeTurn(board.getBoard());
+                else p2.takeTurn(board.getBoard());
+            }
+        }
+        catch(Exception e)
+        {
+            System.out.println("Thread " + threadName + " interrupted by " + e);
+        }
+        finally
+        {
+            System.out.println("Thread " + threadName + " exiting");
+            master.threads--;
+        }
+    }
+    
+    public void start()
+    {
+        System.out.println("Starting " + threadName);
+        if(t == null)
+        {
+            t = new Thread(this, threadName);
+            t.start();
+        }
+    }
+    
+    private void init(String name)
+    {
+        gui = new GUI(this);
+        gui.setVisible(true);
+        if(even)
+        {
+            if(LEARNING) p1 = new RandomPlayer(true, this, "1");
+            else p1 = new JamiesPlayer(false, this, "1");
+            p2 = new DomsPlayer(true, this, "5", master);
+        }
+        else
+        {
+            if(LEARNING) p2 = new RandomPlayer(true, this, "5");
+            else p2 = new JamiesPlayer(false, this, "5");
+            p1 = new DomsPlayer(true, this, "1", master);
+        }
+        board = new Board(this);
+        
+        threadName = name;
+        System.out.println(name + " initialised, p1: " + p1.getClass() + ", p2: " + p2.getClass());
+        
+        JTextField text = gui.getComponentByName("cpuIterations");
+        maxGames = Integer.valueOf(text.getText());
+        if(LEARNING)
+        {
+            maxGames = LEARNING_GAMES;
+            text.setText(String.valueOf(maxGames));
+        }
+        gameCount = 0;
+        
+        p1Score = gui.getComponentByName("p1Score");
+        p2Score = gui.getComponentByName("p2Score");
+        
+        //System.out.println(board.checkWin());
     }
     
     /**
@@ -73,68 +171,60 @@ public class ConnectAI {
      */
     public static void main(String[] args)
     {
-        gui = new GUI();
-        gui.setVisible(true);
-        p1 = new JamiesPlayer(false);
-        p2 = new DomsPlayer(true);
-        board = new Board();
+        threads = new ArrayList<>();
+        master = new PlayerController("ThreadController");
         
-        JTextField text = gui.getComponentByName("cpuIterations");
-        maxGames = Integer.valueOf(text.getText());
-        gameCount = 0;
-        
-        p1Score = gui.getComponentByName("p1Score");
-        p2Score = gui.getComponentByName("p2Score");
-        
-        System.out.println(board.checkWin());
-        
-        if(p1.ai && getPlayer())
+        if(LEARNING)
         {
-            p1.takeTurn(board.board);
-        } else if (p2.ai && !getPlayer())
-        {
-            p2.takeTurn(board.board);
+            System.out.println("In learning mode");
+            for(int i = 0; i < MAX_THREADS; i++)
+            {
+                threads.add(new ConnectAI("Thread" + i, i % 2 == 0));
+                threads.get(i).start();
+            }
         }
-        
-        while(p1.ai && p2.ai && gameCount < maxGames)
+        else
         {
-            if(player1) p1.takeTurn(board.board);
-            else p2.takeTurn(board.board);
+            System.out.println("In play mode");
+            threads.add(new ConnectAI("The One", true));
+            threads.get(0).start();
         }
+
+        master.start();
     }
     
-    public static void random1(boolean ai)
+    public void random1(boolean ai)
     {
-        p1 = new RandomPlayer(ai);
+        p1 = new RandomPlayer(ai, this, "1");
     }
     
-    public static void random2(boolean ai)
+    public void random2(boolean ai)
     {
-        p2 = new RandomPlayer(ai);
+        p2 = new RandomPlayer(ai, this, "5");
     }
     
-    public static void changeSettings(boolean p1Ai, boolean p2Ai, int maxG)
+    public void changeSettings(boolean p1Ai, boolean p2Ai, int maxG)
     {
         System.out.println("changeSettings(" + p1Ai + ", " + p2Ai + ") called");
         
         if(p1 instanceof JamiesPlayer)
         {
-            p1 = new JamiesPlayer(p1Ai);
+            p1 = new JamiesPlayer(p1Ai, this, "1");
             System.out.println("p1 is JamiesPLayer");
         }
         else
         {
-            p1 = new RandomPlayer(p1Ai);
+            p1 = new RandomPlayer(p1Ai, this, "1");
             System.out.println("p1 is RandomPlayer");
         }
         if(p2 instanceof DomsPlayer)
         {
-            p2 = new DomsPlayer(p2Ai);
+            p2 = new DomsPlayer(p2Ai, this, "5", master);
             System.out.println("p2 is DomsPlayer");
         }
         else
         {
-            p2 = new RandomPlayer(p2Ai);
+            p2 = new RandomPlayer(p2Ai, this, "5");
             System.out.println("p2 is RandomPlayer");
         }
         
@@ -147,22 +237,22 @@ public class ConnectAI {
 
         if(p1.ai && getPlayer())
         {
-            p1.takeTurn(board.board);
+            p1.takeTurn(board.getBoard());
         } else if (p2.ai && !getPlayer())
         {
-            p2.takeTurn(board.board);
+            p2.takeTurn(board.getBoard());
         }
         
         while(p1.ai && p2.ai && gameCount < maxGames)
         {
-            if(player1) p1.takeTurn(board.board);
-            else p2.takeTurn(board.board);
+            if(player1) p1.takeTurn(board.getBoard());
+            else p2.takeTurn(board.getBoard());
         }
     }
     
-    public static void reset()
+    public void reset()
     {
-        board = new Board();
+        board = new Board(this);
         
         for(int i = 0; i < 7; i++)
         {
@@ -173,7 +263,13 @@ public class ConnectAI {
             }
         }
         gameCount++;
-        System.out.println("reset() called, gameCount: " + gameCount);
+        //System.out.println("reset() called by " + threadName + ", gameCount: " + gameCount);
+        
+        //alternate starting player each game. switchPlayer() is called after reset()
+        //so we set it to ![the intended player]
+        player1Starts = !player1Starts;
+        player1 = !player1Starts;
+        //System.out.println("Player 1 starts? " + player1Starts);
         //switchPlayer();
     }
     

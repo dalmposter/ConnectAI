@@ -15,11 +15,14 @@ import java.lang.reflect.Field;
  */
 public class GUI extends javax.swing.JFrame {
 
+    private ConnectAI controller;
+    
     /**
      * Creates new form GUI
      */
-    public GUI() {
+    public GUI(ConnectAI thread) {
         initComponents();
+        controller = thread;
     }
 
     //function to return the object with given name
@@ -1077,37 +1080,40 @@ public class GUI extends javax.swing.JFrame {
     {
         boolean success = false;
         int win = -1;
-        if(ConnectAI.getPlayer())
+        if(controller.getPlayer())
         {
-            if(ConnectAI.getBoard().makePlay(column, 1))
+            if(controller.getBoard().makePlay(column, Integer.valueOf(controller.getPlayer1().getPiece())))
             {
                 //successfully made play
                 success = true;
                 //System.out.println("Play successful");
                 
-                win = ConnectAI.getBoard().checkWin();
+                win = controller.getBoard().checkWin();
                 //p1 wins
                 if(win == 1)
                 {
                     p1Score.setText(String.valueOf(Integer.valueOf(p1Score.getText()) + 1));
-                    ConnectAI.getPlayer1().won();
-                    ConnectAI.getPlayer2().lost();
-                    ConnectAI.reset();
+                    controller.getPlayer1().won();
+                    controller.getPlayer2().lost();
+                    controller.reset();
+                    //System.out.println("reset() called from win == 1");
                 }
                 //p2 wins
                 else if(win == 2)
                 {
-                    ConnectAI.getPlayer2().won();
-                    ConnectAI.getPlayer1().lost();
+                    controller.getPlayer2().won();
+                    controller.getPlayer1().lost();
                     p2Score.setText(String.valueOf(Integer.valueOf(p2Score.getText()) + 1));
-                    ConnectAI.reset();
+                    controller.reset();
+                    //System.out.println("reset() called from win == 2");
                 }
                 //draw
                 else if(win == 0)
                 {
-                    ConnectAI.getPlayer1().drew();
-                    ConnectAI.getPlayer2().drew();
-                    ConnectAI.reset();
+                    controller.getPlayer1().drew();
+                    controller.getPlayer2().drew();
+                    controller.reset();
+                    //System.out.println("reset() called from win == 0");
                 }
             }
             else
@@ -1117,34 +1123,37 @@ public class GUI extends javax.swing.JFrame {
         }
         else
         {
-            if(ConnectAI.getBoard().makePlay(column, 5))
+            if(controller.getBoard().makePlay(column, Integer.valueOf(controller.getPlayer2().getPiece())))
             {
                 //successfully made play
                 success = true;
                 //System.out.println("Play successful");
-                win = ConnectAI.getBoard().checkWin();
+                win = controller.getBoard().checkWin();
                 //p1 wins
                 if(win == 1)
                 {
-                    ConnectAI.getPlayer1().won();
-                    ConnectAI.getPlayer2().lost();
+                    controller.getPlayer1().won();
+                    controller.getPlayer2().lost();
                     p1Score.setText(String.valueOf(Integer.valueOf(p1Score.getText()) + 1));
-                    ConnectAI.reset();
+                    controller.reset();
+                    //System.out.println("reset() called from win == 1");
                 }
                 //p2 wins
                 else if(win == 2)
                 {
-                    ConnectAI.getPlayer2().won();
-                    ConnectAI.getPlayer1().lost();
+                    controller.getPlayer2().won();
+                    controller.getPlayer1().lost();
                     p2Score.setText(String.valueOf(Integer.valueOf(p2Score.getText()) + 1));
-                    ConnectAI.reset();
+                    controller.reset();
+                    //System.out.println("reset() called from win == 2");
                 }
                 //draw
                 else if(win == 0)
                 {
-                    ConnectAI.getPlayer1().drew();
-                    ConnectAI.getPlayer2().drew();
-                    ConnectAI.reset();
+                    controller.getPlayer1().drew();
+                    controller.getPlayer2().drew();
+                    controller.reset();
+                    //System.out.println("reset() called from win == 0");
                 }
             }
             else
@@ -1161,19 +1170,19 @@ public class GUI extends javax.swing.JFrame {
     
     private void prepMove(int win)
     {
-        ConnectAI.switchPlayer();
+        controller.switchPlayer();
 
         //System.out.println("player1? : " + ConnectAI.getPlayer() +  ", player1ai? : " + ConnectAI.getPlayer1().ai + ", player2ai? : " + ConnectAI.getPlayer2().ai);
 
-        if(ConnectAI.getPlayer() && ConnectAI.getPlayer1().ai && !ConnectAI.getPlayer2().ai)
+        if(controller.getPlayer() && controller.getPlayer1().ai && !controller.getPlayer2().ai)
         {
             //System.out.println("Sent player 1 to takeTurn()");
-            ConnectAI.getPlayer1().takeTurn(ConnectAI.getBoard().board);
+            controller.getPlayer1().takeTurn(controller.getBoard().getBoard());
         }
-        else if(!ConnectAI.getPlayer() && !ConnectAI.getPlayer1().ai && ConnectAI.getPlayer2().ai)
+        else if(!controller.getPlayer() && !controller.getPlayer1().ai && controller.getPlayer2().ai)
         {
             //System.out.println("Sent player 2 to takeTurn()");
-            ConnectAI.getPlayer2().takeTurn(ConnectAI.getBoard().board);
+            controller.getPlayer2().takeTurn(controller.getBoard().getBoard());
         }
     }
     
@@ -1206,23 +1215,23 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_play6ActionPerformed
 
     private void CPU1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CPU1ActionPerformed
-        ConnectAI.changeSettings(CPU1.isSelected(), CPU2.isSelected(), Integer.valueOf(cpuIterations.getText()));
+        controller.changeSettings(CPU1.isSelected(), CPU2.isSelected(), Integer.valueOf(cpuIterations.getText()));
     }//GEN-LAST:event_CPU1ActionPerformed
 
     private void CPU2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CPU2ActionPerformed
-        ConnectAI.changeSettings(CPU1.isSelected(), CPU2.isSelected(), Integer.valueOf(cpuIterations.getText()));
+        controller.changeSettings(CPU1.isSelected(), CPU2.isSelected(), Integer.valueOf(cpuIterations.getText()));
     }//GEN-LAST:event_CPU2ActionPerformed
 
     private void cpuIterationsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cpuIterationsActionPerformed
-        ConnectAI.changeSettings(CPU1.isSelected(), CPU2.isSelected(), Integer.valueOf(cpuIterations.getText()));
+        controller.changeSettings(CPU1.isSelected(), CPU2.isSelected(), Integer.valueOf(cpuIterations.getText()));
     }//GEN-LAST:event_cpuIterationsActionPerformed
 
     private void Random2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Random2ActionPerformed
-        ConnectAI.random2(CPU2.isSelected());
+        controller.random2(CPU2.isSelected());
     }//GEN-LAST:event_Random2ActionPerformed
 
     private void Random1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Random1ActionPerformed
-        ConnectAI.random1(CPU1.isSelected());
+        controller.random1(CPU1.isSelected());
     }//GEN-LAST:event_Random1ActionPerformed
 
     /**
@@ -1253,11 +1262,11 @@ public class GUI extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new GUI().setVisible(true);
-            }
-        });
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new GUI().setVisible(true);
+//            }
+//        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
