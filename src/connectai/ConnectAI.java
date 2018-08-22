@@ -15,7 +15,7 @@ import java.util.*;
 public class ConnectAI implements Runnable {
 
     private static final int MAX_THREADS = 3;
-    private static final int LEARNING_GAMES = 10000;
+    private static final int LEARNING_GAMES = 25000;
     private static final boolean LEARNING = true;
     private Thread t;
     private String threadName;

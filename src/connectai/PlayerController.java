@@ -38,8 +38,11 @@ public class PlayerController implements Runnable {
                     triggerWrite();
                     System.out.println("Finished writing");
                 }
-                else System.out.println("Did not write to db as queue is empty");
-                Thread.sleep(10000);
+                else
+                {
+                    System.out.println("Did not write to db as queue is empty");
+                    Thread.sleep(10000);
+                }
             }
             System.out.println(threadName + ": There are no other threads, exiting and writing " + queue.size());
             triggerWrite();
