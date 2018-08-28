@@ -129,6 +129,7 @@ public class GUI extends javax.swing.JFrame
         p1Score6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("ConnectAI");
         setBackground(new java.awt.Color(0, 0, 153));
         setResizable(false);
 

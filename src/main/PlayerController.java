@@ -23,7 +23,7 @@ public class PlayerController implements Runnable {
     
     //amount of time to wait before first write cycle
     //smaller if the ratio of power between your cpu and drive is high
-    private static final int INITIAL_WAIT = 30000;
+    private static final int INITIAL_WAIT = 10000;
     
     //thread identity
     private Thread t;
@@ -47,15 +47,17 @@ public class PlayerController implements Runnable {
         {
             ConnectAI.log(Level.INFO, threadName + " interrupted from sleep, can continue");
         }
-        while(threads > 0)
+        while(threads > 0 || !ConnectAI.getLearning())
         {
             try
             {
                 ConnectAI.log(Level.INFO, threadName + ": running");
                 //let's let a bit of a queue build up
                 Thread.sleep(INITIAL_WAIT);
-                while(threads > 0)
+                while(threads > 0 || !ConnectAI.getLearning())
                 {
+                    //manage queue size on the fly
+                    //ConnectAI.adjustSleepTime(queue.size());
                     //if there's a queue, write it
                     if(queue.size() > 0)
                     {
@@ -71,8 +73,6 @@ public class PlayerController implements Runnable {
                         ConnectAI.log(Level.INFO, "Did not write to db as queue is empty");
                         Thread.sleep(10000);
                     }
-                    //manage queue size on the fly
-                    ConnectAI.adjustSleepTime(queue.size());
                 }
                 //if there's no more games being played do one final write then end yourself
                 ConnectAI.log(Level.INFO, threadName + ": There are no other threads, exiting and writing " + queue.size());
@@ -141,7 +141,8 @@ public class PlayerController implements Runnable {
         }
         catch (Exception e)
         {
-            ConnectAI.log(Level.INFO, threadName + ": EXCEPTION: " + e);
+            ConnectAI.log(Level.INFO, threadName + ": EXCEPTION:");
+            e.printStackTrace();
         }
         finally
         {

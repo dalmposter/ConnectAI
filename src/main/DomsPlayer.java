@@ -23,6 +23,8 @@ public class DomsPlayer extends Player
     private ArrayList<ArrayList<String>> moveTracker = new ArrayList<>();
     
     private PlayerController master;
+    private int resetConnect = 0;
+    private int resetMax = 50000;
     
     private boolean randomMoves = false;
     
@@ -35,6 +37,14 @@ public class DomsPlayer extends Player
         if("5".equals(piece)) opponentPiece = "1";
         else opponentPiece = "5";
         randomMoves = random;
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        }
+        catch(Exception e)
+        {
+            ConnectAI.log(Level.SEVERE, "Error getting J connector");
+        }
     }
     
     //determine if the ai needs to play somewhere to win or block a win
@@ -309,9 +319,14 @@ public class DomsPlayer extends Player
         
         try
         {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connect = DriverManager.getConnection("jdbc:mysql://localhost/connectdb?" + "user=sqluser&password=sqluserpw&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT&useSSL=false&allowPublicKeyRetrieval=true");
-            
+            resetConnect++;
+            if(resetConnect > resetMax)
+            {
+                ConnectAI.log(Level.INFO, controller.getName() + " reset db connection");
+                close();
+                connect = DriverManager.getConnection("jdbc:mysql://localhost/connectdb?" + "user=sqluser&password=sqluserpw&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT&useSSL=false&allowPublicKeyRetrieval=true");
+                resetConnect = 0;
+            }
             preparedStatement = connect.prepareStatement("select 'wins', 'losses', 'draws', 'move' from connectdb.boardStates where state = ? and piece = ?");
             preparedStatement.setString(1, dbBoard);
             preparedStatement.setString(2, piece);
@@ -350,7 +365,7 @@ public class DomsPlayer extends Player
         }
         finally
         {
-            close();
+            //close();
             //System.out.println("Closed connection");
         }
         

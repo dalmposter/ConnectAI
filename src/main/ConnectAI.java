@@ -19,8 +19,8 @@ public class ConnectAI implements Runnable {
     private static Logger logger;
     
     //final variables are hard coded attributes of the training process. Self explanatory
-    private static final int MAX_THREADS = 3;
-    private static final int LEARNING_GAMES = 75000;
+    private static final int MAX_THREADS = 8;
+    private static final int LEARNING_GAMES = 100000;
     private static final boolean LEARNING = true;
     //play randomly instead of from database?
     private static final boolean RANDOM_LEARNING = false;
@@ -36,8 +36,8 @@ public class ConnectAI implements Runnable {
     public static PlayerController master;
     
     //variables to control rate of play on the fly to balance the queue size
-    private static int sleepTime = 300;
-    private static int lastQueue = 500;
+    private static int sleepTime = 0;
+    private static int lastQueue = 0;
     //change how agressively the queue is managed
     private static final int MULTIPLYER = 1;
     private static final int QUEUE_AIM = 400;
@@ -76,6 +76,16 @@ public class ConnectAI implements Runnable {
 //    {
 //        return LEARNING_GAMES;
 //    }
+    
+    public String getName()
+    {
+        return threadName;
+    }
+    
+    public static boolean getLearning()
+    {
+        return LEARNING;
+    }
     
     //adjust the wait time between taking turns. Dynamic to ensure db write queue
     //is always populated but not so much so that we run out of RAM
@@ -266,11 +276,14 @@ public class ConnectAI implements Runnable {
             {
                 if(player1) p1.takeTurn(board.getBoard());
                 else p2.takeTurn(board.getBoard());
+                Thread.sleep(2);
             }
         }
         catch(Exception e)
         {
             ConnectAI.log(Level.SEVERE, "Thread " + threadName + " interrupted by " + e);
+            master.publiclyTriggeredWrite();
+            System.exit(0);
         }
         finally
         {
