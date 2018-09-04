@@ -19,8 +19,8 @@ public class ConnectAI implements Runnable {
     private static Logger logger;
     
     //final variables are hard coded attributes of the training process. Self explanatory
-    private static final int MAX_THREADS = 8;
-    private static final int LEARNING_GAMES = 100000;
+    private static final int MAX_THREADS = 3;
+    private static final int LEARNING_GAMES = 2;
     private static final boolean LEARNING = true;
     //play randomly instead of from database?
     private static final boolean RANDOM_LEARNING = false;
@@ -36,11 +36,11 @@ public class ConnectAI implements Runnable {
     public static PlayerController master;
     
     //variables to control rate of play on the fly to balance the queue size
-    private static int sleepTime = 0;
+    private static int sleepTime = 500;
     private static int lastQueue = 0;
     //change how agressively the queue is managed
-    private static final int MULTIPLYER = 1;
-    private static final int QUEUE_AIM = 400;
+    private static final int MULTIPLYER = 5;
+    private static final int QUEUE_AIM = 50;
     
     private Player p1;
     private Player p2;
@@ -92,6 +92,8 @@ public class ConnectAI implements Runnable {
     //adjust relevant variables at top to change how much this is managed
     public static void adjustSleepTime(int queue)
     {
+        double aim = ((double)QUEUE_AIM) / (double)400;
+        ConnectAI.log(Level.INFO, "ADJUSTING QUEUE, AIM/400 : " + aim);
         if(queue == 0)
         {
             if(sleepTime - 20 > 0)
@@ -100,7 +102,7 @@ public class ConnectAI implements Runnable {
                 ConnectAI.log(Level.INFO, "Queue was empty. Waiting 10 seconds and reducing think time by " + String.valueOf(20 * MULTIPLYER) + "ms");
             }
         }
-        else if(queue < 20 * (QUEUE_AIM / 400))
+        else if(queue < 20 * aim)
         {
             if(sleepTime - 7 > 0)
             {
@@ -108,7 +110,7 @@ public class ConnectAI implements Runnable {
                 ConnectAI.log(Level.INFO, queue + " items in queue , reduced think time by " + String.valueOf(7 * MULTIPLYER) + "ms");
             }
         }
-        else if(queue < 75 * (QUEUE_AIM / 400))
+        else if(queue < 75 * aim)
         {
             if(sleepTime - 4 > 0 && queue < lastQueue)
             {
@@ -116,7 +118,7 @@ public class ConnectAI implements Runnable {
                 ConnectAI.log(Level.INFO, queue + " items in queue, reduced think time by " + String.valueOf(4 * MULTIPLYER) + "ms");
             }
         }
-        else if(queue < 300 * (QUEUE_AIM / 400))
+        else if(queue < 300 * aim)
         {
             if(sleepTime - 2 > 0 && queue < lastQueue) 
             {
@@ -124,7 +126,7 @@ public class ConnectAI implements Runnable {
                 ConnectAI.log(Level.INFO, queue + " items in queue, reduced think time by " + String.valueOf(2 * MULTIPLYER) + "ms");
             }
         }
-        else if(queue > 1250 * (QUEUE_AIM / 400))
+        else if(queue > 1250 * aim)
         {
             if(queue > lastQueue)
             {
@@ -132,7 +134,7 @@ public class ConnectAI implements Runnable {
                 ConnectAI.log(Level.INFO, queue + " items in queue, increased sleep time by " + String.valueOf(10 * MULTIPLYER) + "ms");
             }
         }
-        else if(queue > 750 * (QUEUE_AIM / 400))
+        else if(queue > 750 * aim)
         {
             if(queue > lastQueue)
             {
@@ -140,7 +142,7 @@ public class ConnectAI implements Runnable {
                 ConnectAI.log(Level.INFO, queue + " items in queue, increasd think time by " + String.valueOf(5 * MULTIPLYER) + "ms");
             }
         }
-        else if(queue > 500 * (QUEUE_AIM / 400))
+        else if(queue > 500 * aim)
         {
             if(queue > lastQueue)
             {
@@ -212,30 +214,30 @@ public class ConnectAI implements Runnable {
         {
             if(LEARNING)
             {
-                p1 = new RandomPlayer(true, this, "1");
+                p1 = new RandomPlayer(true, this, 1);
                 gui.setP1Name("Random");
             }
             else
             {
-                p1 = new JamiesPlayer(false, this, "1");
+                p1 = new JamiesPlayer(false, this, 1);
                 gui.setP1Name("JamiesPlayer/Human");
             }
-            p2 = new DomsPlayer(true, this, "5", master, RANDOM_LEARNING);
+            p2 = new DomsPlayer(true, this, 5, master, RANDOM_LEARNING);
             gui.setP2Name("DomsPlayer");
         }
         else
         {
             if(LEARNING)
             {
-                p2 = new RandomPlayer(true, this, "5");
+                p2 = new RandomPlayer(true, this, 5);
                 gui.setP2Name("RandomPlayer");
             }
             else 
             {
-                p2 = new JamiesPlayer(false, this, "5");
+                p2 = new JamiesPlayer(false, this, 5);
                 gui.setP2Name("JamiesPlayer/Human");
             }
-            p1 = new DomsPlayer(true, this, "1", master, RANDOM_LEARNING);
+            p1 = new DomsPlayer(true, this, 1, master, RANDOM_LEARNING);
             gui.setP1Name("DomsPlayer");
         }
         board = new Board(this);
@@ -282,6 +284,7 @@ public class ConnectAI implements Runnable {
         catch(Exception e)
         {
             ConnectAI.log(Level.SEVERE, "Thread " + threadName + " interrupted by " + e);
+            ConnectAI.log(Level.SEVERE, Arrays.toString(e.getStackTrace()));
             master.publiclyTriggeredWrite();
             System.exit(0);
         }
@@ -353,13 +356,13 @@ public class ConnectAI implements Runnable {
     //set player 1 to be a RandomPlayer
     public void random1(boolean ai)
     {
-        p1 = new RandomPlayer(ai, this, "1");
+        p1 = new RandomPlayer(ai, this, 1);
     }
     
     //set player 2 to be a RandomPlayer
     public void random2(boolean ai)
     {
-        p2 = new RandomPlayer(ai, this, "5");
+        p2 = new RandomPlayer(ai, this, 5);
     }
     
     //update method to reinstantiate most things when settings are changed
@@ -370,22 +373,22 @@ public class ConnectAI implements Runnable {
         //create new instances of relevant players
         if(p1 instanceof JamiesPlayer)
         {
-            p1 = new JamiesPlayer(p1Ai, this, "1");
+            p1 = new JamiesPlayer(p1Ai, this, 1);
             ConnectAI.log(Level.INFO, "p1 is JamiesPLayer");
         }
         else
         {
-            p1 = new RandomPlayer(p1Ai, this, "1");
+            p1 = new RandomPlayer(p1Ai, this, 1);
             ConnectAI.log(Level.INFO, "p1 is RandomPlayer");
         }
         if(p2 instanceof DomsPlayer)
         {
-            p2 = new DomsPlayer(p2Ai, this, "5", master, RANDOM_LEARNING);
+            p2 = new DomsPlayer(p2Ai, this, 5, master, RANDOM_LEARNING);
             ConnectAI.log(Level.INFO, "p2 is DomsPlayer");
         }
         else
         {
-            p2 = new RandomPlayer(p2Ai, this, "5");
+            p2 = new RandomPlayer(p2Ai, this, 5);
             ConnectAI.log(Level.INFO, "p2 is RandomPlayer");
         }
         

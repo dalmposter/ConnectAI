@@ -14,16 +14,16 @@ import java.util.*;
 public class RandomPlayer extends Player
 {
     //record of this game
-    ArrayList<ArrayList<String>> moveLog = new ArrayList<>();
+    ArrayList<ArrayList<Integer>> moveLog = new ArrayList<>();
     
     //constructor
-    RandomPlayer(boolean isAi, ConnectAI thread, String pieceIn)
+    RandomPlayer(boolean isAi, ConnectAI thread, int pieceIn)
     {
         controller = thread;
         ai = isAi;
         piece = pieceIn;
-        if("5".equals(piece)) opponentPiece = "1";
-        else opponentPiece = "5";
+        if(pieceIn == 5) opponentPiece = 1;
+        else opponentPiece = 5;
     }
     
     //determine if the ai needs to play somewhere to win or block a win
@@ -167,28 +167,18 @@ public class RandomPlayer extends Player
     }
     
     //convert the array boardstate to a string to store in the database
-    private String toDbBoard(int[][] boardState)
+    private ArrayList<Integer> toDbBoard(int[][] boardState, int pieceIn)
     {
-        String out = "";
-        
-        for (int[] boardState1 : boardState) {
-            for (int cell : boardState1) {
-                out += String.valueOf(boardState1[cell]);
-            }
-        }
-        
-        return out;
+        return DomsPlayer.toDbBoard(boardState, pieceIn);
     }
     
     //this is how me make our move
     private void clickButton(int index, int[][] boardState)
     {
-        String dbBoard = toDbBoard(boardState);
-        String move = String.valueOf(index);
+        ArrayList<Integer> dbBoard = toDbBoard(boardState, piece);
         
-        ArrayList<String> entry = new ArrayList<>();
-        entry.add(dbBoard);
-        entry.add(move);
+        ArrayList<Integer> entry = dbBoard;
+        entry.add(index);
         
         moveLog.add(entry);
         

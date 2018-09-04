@@ -3,11 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/domin/Documents/GitHub/ConnectAI/src/main/Board.java</file>
-            <file>file:/C:/Users/domin/Documents/GitHub/ConnectAI/src/main/PlayerController.java</file>
-            <file>file:/C:/Users/domin/Documents/GitHub/ConnectAI/src/main/GUI.java</file>
-            <file>file:/C:/Users/domin/Documents/GitHub/ConnectAI/src/main/DomsPlayer.java</file>
-            <file>file:/C:/Users/domin/Documents/GitHub/ConnectAI/src/main/ConnectAI.java</file>
+            <file>file:/C:/Users/Dominic%20Cousins/Documents/GitHub/ConnectAI/src/main/QueueItem.java</file>
+            <file>file:/C:/Users/Dominic%20Cousins/Documents/GitHub/ConnectAI/src/main/Player.java</file>
+            <file>file:/C:/Users/Dominic%20Cousins/Documents/GitHub/ConnectAI/src/main/ConnectAI.java</file>
+            <file>file:/C:/Users/Dominic%20Cousins/Documents/GitHub/ConnectAI/src/main/PlayerController.java</file>
+            <file>file:/C:/Users/Dominic%20Cousins/Documents/GitHub/ConnectAI/src/main/RandomPlayer.java</file>
+            <file>file:/C:/Users/Dominic%20Cousins/Documents/GitHub/ConnectAI/src/main/JamiesPlayer.java</file>
+            <file>file:/C:/Users/Dominic%20Cousins/Documents/GitHub/ConnectAI/src/main/DomsPlayer.java</file>
         </group>
     </open-files>
 </project-private>

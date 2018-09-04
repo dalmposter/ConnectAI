@@ -5,6 +5,8 @@
  */
 package main;
 
+import java.util.logging.Level;
+
 /**
  *
  * @author dominic.cousins
@@ -15,13 +17,13 @@ public class Player
     
     protected boolean ai;
     protected int score;
-    protected String piece;
-    protected String opponentPiece;
+    protected int piece;
+    protected int opponentPiece;
     
     //NOTES:
     //call ConnectAI.getGUI().buttonClick(x) where x is the column you wish the play in
     
-    public String getPiece()
+    public int getPiece()
     {
         return piece;
     }
@@ -36,7 +38,7 @@ public class Player
     
     protected void drew()
     {
-        System.out.println("Draw occured");
+        ConnectAI.log(Level.INFO, "Draw occured");
     }
     
     protected void lost()
@@ -46,7 +48,7 @@ public class Player
     
     protected void won()
     {
-        System.out.println(this.getClass() + " won!");
+        ConnectAI.log(Level.INFO, this.getClass() + " won!");
         score++;
     }
     

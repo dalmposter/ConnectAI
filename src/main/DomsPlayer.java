@@ -20,7 +20,7 @@ public class DomsPlayer extends Player
     private PreparedStatement preparedStatement = null;
     private ResultSet resultSet = null;
     
-    private ArrayList<ArrayList<String>> moveTracker = new ArrayList<>();
+    private ArrayList<ArrayList<Integer>> moveTracker = new ArrayList<>();
     
     private PlayerController master;
     private int resetConnect = 0;
@@ -28,14 +28,14 @@ public class DomsPlayer extends Player
     
     private boolean randomMoves = false;
     
-    DomsPlayer(boolean isAi, ConnectAI thread, String pieceIn, PlayerController mast, boolean random)
+    DomsPlayer(boolean isAi, ConnectAI thread, int pieceIn, PlayerController mast, boolean random)
     {
         master = mast;
         controller = thread;
         ai = isAi;
         piece = pieceIn;
-        if("5".equals(piece)) opponentPiece = "1";
-        else opponentPiece = "5";
+        if(piece == 5) opponentPiece = 1;
+        else opponentPiece = 5;
         randomMoves = random;
         try
         {
@@ -187,14 +187,20 @@ public class DomsPlayer extends Player
         return forceLose;
     }
     
-    public static String toDbBoard(int[][] boardState)
+    public static ArrayList<Integer> toDbBoard(int[][] boardState, int piece)
     {
-        String out = "";
+        ArrayList<Integer> out = new ArrayList<>();
         
         for (int[] boardState1 : boardState) {
-            for (int cell : boardState1) {
-                out += String.valueOf(cell);
+            String currOut = "";
+            for (int i = 0; i < boardState1.length; i++)
+            {
+                if(boardState1[i] == 0) currOut += "0";
+                else if(piece == 1) currOut += String.valueOf(boardState1[i]);
+                else if(boardState1[i] == 5) currOut += "1";
+                else currOut += "5";
             }
+            out.add(Integer.valueOf(currOut));
         }
         
         return out;
@@ -219,7 +225,7 @@ public class DomsPlayer extends Player
     
     private void clickButton(int index, int[][] boardState)
     {
-        String dbBoard = toDbBoard(boardState);
+        ArrayList<Integer> dbBoard = toDbBoard(boardState, piece);
        // //System.out.println("Converted :");
 //        for(int i = 0; i < 7; i++)
 //        {
@@ -230,11 +236,9 @@ public class DomsPlayer extends Player
 //            }
 //        }
 //        //System.out.println("To : " + dbBoard);
-        String move = String.valueOf(index);
         
-        ArrayList<String> entry = new ArrayList<>();
-        entry.add(dbBoard);
-        entry.add(move);
+        ArrayList<Integer> entry = dbBoard;
+        entry.add(index);
         
         moveTracker.add(entry);
         
@@ -283,21 +287,21 @@ public class DomsPlayer extends Player
     @Override
     protected void won()
     {
-        master.addToQueue(1, moveTracker, piece);
+        master.addToQueue(1, moveTracker);
         moveTracker = new ArrayList<>();
     }
     
     @Override
     protected void lost()
     {
-        master.addToQueue(-1, moveTracker, piece);
+        master.addToQueue(-1, moveTracker);
         moveTracker = new ArrayList<>();
     }
     
     @Override
     protected void drew()
     {
-        master.addToQueue(0, moveTracker, piece);
+        master.addToQueue(0, moveTracker);
         moveTracker = new ArrayList<>();
     }
     
@@ -306,7 +310,7 @@ public class DomsPlayer extends Player
         if(randomMoves) return -1;
         int out = -1;
         ArrayList<ArrayList<Double>> outArray = new ArrayList<>();
-        String dbBoard = toDbBoard(boardState);
+        ArrayList<Integer> dbBoard = toDbBoard(boardState, piece);
         ArrayList<Integer> moves = new ArrayList<>();
         
         for(int i = 0; i < 7; i++)
@@ -327,10 +331,13 @@ public class DomsPlayer extends Player
                 connect = DriverManager.getConnection("jdbc:mysql://localhost/connectdb?" + "user=sqluser&password=sqluserpw&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT&useSSL=false&allowPublicKeyRetrieval=true");
                 resetConnect = 0;
             }
-            preparedStatement = connect.prepareStatement("select 'wins', 'losses', 'draws', 'move' from connectdb.boardStates where state = ? and piece = ?");
-            preparedStatement.setString(1, dbBoard);
-            preparedStatement.setString(2, piece);
+            preparedStatement = connect.prepareStatement("select 'wins', 'losses', 'draws', 'move' from connectdb.boardStates where column0 = ? AND column1 = ? AND column2 = ? AND column3 = ? AND column4 = ? AND column5 = ? AND column6 = ?");
             
+            for(int i = 0; i < 7; i++)
+            {
+                preparedStatement.setInt(i + 1, dbBoard.get(i));
+            }
+            ConnectAI.log(Level.INFO, "readDB() About to execute : " + preparedStatement);
             resultSet = preparedStatement.executeQuery();
             while(resultSet.next())
             {
@@ -339,7 +346,7 @@ public class DomsPlayer extends Player
                 temp.add((double)resultSet.getInt("losses"));
                 temp.add((double)resultSet.getInt("draws"));
                 temp.add((double)resultSet.getInt("move"));
-                temp.add(temp.get(0 )/ (temp.get(0) + temp.get(1)));
+                temp.add(temp.get(0) / (temp.get(0) + temp.get(1)));
                 
                 ArrayList<Double> temp2 = new ArrayList<>();
                 

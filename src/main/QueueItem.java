@@ -14,15 +14,13 @@ import java.util.*;
 public class QueueItem
 {
     private int win;
-    private ArrayList<ArrayList<String>> moveTracker;
-    private String piece;
+    private ArrayList<ArrayList<Integer>> moveTracker;
     
     //constructor. There's no logic here
-    QueueItem(int winner, ArrayList<ArrayList<String>> moves, String playerPiece)
+    QueueItem(int winner, ArrayList<ArrayList<Integer>> moves)
     {
         win = winner;
         moveTracker = moves;
-        piece = playerPiece;
     }
     
     //it's all getters mate
@@ -31,13 +29,8 @@ public class QueueItem
         return win;
     }
     
-    public ArrayList<ArrayList<String>> getMoves()
+    public ArrayList<ArrayList<Integer>> getMoves()
     {
         return moveTracker;
-    }
-    
-    public String getPiece()
-    {
-        return piece;
     }
 }

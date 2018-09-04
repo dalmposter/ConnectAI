@@ -7,6 +7,7 @@ package main;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.*;
 
 /**
@@ -20,6 +21,7 @@ public class PlayerController implements Runnable {
     private PreparedStatement preparedStatement = null;
     private ResultSet resultSet = null;
     ArrayList<QueueItem> queue = new ArrayList<>();
+    private static final boolean queueing = true;
     
     //amount of time to wait before first write cycle
     //smaller if the ratio of power between your cpu and drive is high
@@ -47,7 +49,7 @@ public class PlayerController implements Runnable {
         {
             ConnectAI.log(Level.INFO, threadName + " interrupted from sleep, can continue");
         }
-        while(threads > 0 || !ConnectAI.getLearning())
+        do
         {
             try
             {
@@ -57,15 +59,15 @@ public class PlayerController implements Runnable {
                 while(threads > 0 || !ConnectAI.getLearning())
                 {
                     //manage queue size on the fly
-                    //ConnectAI.adjustSleepTime(queue.size());
+                    ConnectAI.adjustSleepTime(queue.size());
                     //if there's a queue, write it
                     if(queue.size() > 0)
                     {
                         ConnectAI.log(Level.INFO, threadName + ": Wrote " + queue.size() + " to db");
-                        soFar += queue.size();
+                        //soFar += queue.size();
                         triggerWrite();
                         ConnectAI.log(Level.INFO, "Finished writing");
-                        ConnectAI.log(Level.INFO, soFar + " games so far. NOT ACCURATE IF ERROR");
+                        //ConnectAI.log(Level.INFO, soFar + " games so far. NOT ACCURATE IF ERROR");
                     }
                     //if not why the fuck not? let's give the bois some time to get in shape
                     else
@@ -91,6 +93,7 @@ public class PlayerController implements Runnable {
                 ConnectAI.log(Level.INFO, "There are " + threads + " threads still alive");
             }
         }
+        while(threads > 0 || !ConnectAI.getLearning());
         ConnectAI.log(Level.INFO, "The controller has stopped. The program will exit");
         close(); //close any connections if necessary
         System.exit(0); //0 denotes normal exit of program
@@ -114,9 +117,20 @@ public class PlayerController implements Runnable {
     }
     
     //public method to add items to the queue
-    public void addToQueue(int win, ArrayList<ArrayList<String>> moveTracker, String piece)
+    public void addToQueue(int win, ArrayList<ArrayList<Integer>> moveTracker)
     {
-        queue.add(new QueueItem(win, moveTracker, piece));
+        soFar++;
+        if(queueing)
+        {
+            queue.add(new QueueItem(win, moveTracker));
+            ConnectAI.log(Level.INFO,"Just added item to queue, soFar : " + soFar);
+        }
+        else 
+        {
+            ConnectAI.log(Level.INFO,"Just wrote an item, soFar : " + soFar);
+            writeDB(win, moveTracker);
+        }
+        
     }
     
     //don't really want to trigger the write from elsewhere but here just incase
@@ -136,7 +150,7 @@ public class PlayerController implements Runnable {
             ArrayList<QueueItem> currentQueue = queue;
             queue = new ArrayList<>();
             currentQueue.forEach((item) -> {
-                writeDB(item.getWin(), item.getMoves(), item.getPiece());
+                writeDB(item.getWin(), item.getMoves());
             });
         }
         catch (Exception e)
@@ -152,7 +166,7 @@ public class PlayerController implements Runnable {
     }
     
     //function to write the entry for a single game to the database
-    private void writeDB(int win, ArrayList<ArrayList<String>> moveTracker, String piece)
+    private void writeDB(int win, ArrayList<ArrayList<Integer>> moveTracker)
     {
         int wins = 0;
         int losses = 0;
@@ -175,43 +189,102 @@ public class PlayerController implements Runnable {
         //write a row for each move
         for(int i = 0; i < moveTracker.size(); i++)
         {
+            int rows = 0;
             try
             {
                 //log(Level.INFO, "Row for " + moveTracker.get(i).get(0) + ", " + moveTracker.get(i).get(1) + " exists. Adding to it");
-                
+                if(connect == null)
+                {
+                    try
+                    {
+                        Class.forName("com.mysql.cj.jdbc.Driver");
+                        connect = DriverManager.getConnection("jdbc:mysql://localhost/connectdb?" + "user=sqluser&password=sqluserpw&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT&useSSL=false&allowPublicKeyRetrieval=true");
+                    }
+                    catch(Exception e)
+                    {
+                        ConnectAI.log(Level.SEVERE, "Couldnt intialise connection to db : " + e);
+                        ConnectAI.log(Level.SEVERE, Arrays.toString(e.getStackTrace()));
+                    }
+                }
                 //first try to update the row
-                preparedStatement = connect.prepareStatement("update boardStates set wins = wins + ?, losses = losses + ?, draws = draws + ? where state = ? and move = ? and piece = ?");
+                preparedStatement = connect.prepareStatement("UPDATE boardstates SET wins = wins + ?, losses = losses + ?, draws = draws + ? WHERE move = ? AND column0 = ? AND column1 = ? AND column2 = ? AND column3 = ? AND column4 = ? AND column5 = ? AND column6 = ?");
                 preparedStatement.setInt(1, wins);
                 preparedStatement.setInt(2, losses);
                 preparedStatement.setInt(3, draws);
-                preparedStatement.setString(4, moveTracker.get(i).get(0));
-                preparedStatement.setInt(5, Integer.valueOf(moveTracker.get(i).get(1)));
-                preparedStatement.setString(6, piece);
-
-                preparedStatement.executeUpdate();
+                preparedStatement.setInt(4, moveTracker.get(i).get(7));
+                for(int j = 0; j < 7; j++)
+                {
+                    preparedStatement.setInt(j + 5, moveTracker.get(i).get(j));
+                }
+                ConnectAI.log(Level.INFO, "writeDB() about to execute : " + preparedStatement);
+                rows = preparedStatement.executeUpdate();
             }
             catch (SQLException e)
             {
                 //presumable the update was rejected because there was no row to update. Inserting . . .
+                ConnectAI.log(Level.WARNING, "Failed to update : " + e);
+                ConnectAI.log(Level.WARNING, Arrays.toString(e.getStackTrace()));
                 try
                 {
                     //prep an insert
-                    preparedStatement = connect.prepareStatement("insert into boardStates values (?, ?, ?, ?, ?, ?);");
-                    preparedStatement.setString(1, moveTracker.get(i).get(0));
-                    preparedStatement.setInt(2, Integer.valueOf(moveTracker.get(i).get(1)));
-                    preparedStatement.setString(3, piece);
-                    preparedStatement.setInt(4, wins);
-                    preparedStatement.setInt(5, losses);
-                    preparedStatement.setInt(6, draws);
-                    
-                    preparedStatement.executeUpdate();
+                    preparedStatement = connect.prepareStatement("insert into boardStates values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+                    for(int j = 0; j < 7; j++)
+                    {
+                        preparedStatement.setInt(j + 1, moveTracker.get(i).get(j));
+                    }
+                    preparedStatement.setInt(8, moveTracker.get(i).get(7));
+                    preparedStatement.setInt(9, wins);
+                    preparedStatement.setInt(10, losses);
+                    preparedStatement.setInt(11, draws);
+                    ConnectAI.log(Level.INFO, "writeDB() about to execute : " + preparedStatement);
+                    rows = preparedStatement.executeUpdate();
                 }
                 catch (SQLException f)
                 {
                     //something bad happened
-                    ConnectAI.log(Level.INFO, threadName + " couldn't insert into or update the database, something has gone very wrong : " + f);
+                    ConnectAI.log(Level.WARNING, threadName + " couldn't insert into or update the database, something has gone very wrong : " + f);
+                    ConnectAI.log(Level.SEVERE, Arrays.toString(f.getStackTrace()));
                 }
             }
+            
+            if(rows == 0)
+            {
+                try
+                {
+                    //prep an insert
+                    preparedStatement = connect.prepareStatement("insert into boardStates values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+                    for(int j = 0; j < 7; j++)
+                    {
+                        preparedStatement.setInt(j + 1, moveTracker.get(i).get(j));
+                    }
+                    preparedStatement.setInt(8, moveTracker.get(i).get(7));
+                    preparedStatement.setInt(9, wins);
+                    preparedStatement.setInt(10, losses);
+                    preparedStatement.setInt(11, draws);
+                    ConnectAI.log(Level.INFO, "writeDB() about to execute : " + preparedStatement);
+                    preparedStatement.executeUpdate();
+                }
+                catch(Exception e)
+                {
+                    ConnectAI.log(Level.SEVERE, "writeDB(): tried updating entry, no entry found. Tried adding entry, failed : " + e);
+                    ConnectAI.log(Level.SEVERE, Arrays.toString(e.getStackTrace()));
+                }
+            }
+        }
+        
+        try
+        {
+            if(wins > 0) preparedStatement = connect.prepareStatement("INSERT INTO games (win) VALUES (1)");
+            else if(losses > 0) preparedStatement = connect.prepareStatement("INSERT INTO games (loss) VALUES (1)");
+            else preparedStatement = connect.prepareStatement("INSERT INTO games (draw) VALUES (1)");
+            
+            ConnectAI.log(Level.INFO, "About to execute : " + preparedStatement);
+            preparedStatement.executeUpdate();
+        }
+        catch(Exception e)
+        {
+            ConnectAI.log(Level.SEVERE, "Error inserting final game record : " + e);
+            ConnectAI.log(Level.SEVERE, Arrays.toString(e.getStackTrace()));
         }
     }
     

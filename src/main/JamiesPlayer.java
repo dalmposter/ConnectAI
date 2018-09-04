@@ -16,7 +16,7 @@ public class JamiesPlayer extends Player
     //between the format the board is stored in internally and the format I intend to
     //store the board states in the db in
     
-    JamiesPlayer(boolean isAi, ConnectAI thread, String pieceIn)
+    JamiesPlayer(boolean isAi, ConnectAI thread, int pieceIn)
     {
         ai = isAi;
         controller = thread;
