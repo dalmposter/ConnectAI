@@ -20,6 +20,7 @@ public class ConnectAI implements Runnable {
     
     //final variables are hard coded attributes of the training process. Self explanatory
     private static final int MAX_THREADS = 3;
+    //amount of games each thread will play before ending
     private static final int LEARNING_GAMES = 2;
     private static final boolean LEARNING = true;
     //play randomly instead of from database?

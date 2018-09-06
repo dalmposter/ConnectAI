@@ -21,6 +21,8 @@ public class PlayerController implements Runnable {
     private PreparedStatement preparedStatement = null;
     private ResultSet resultSet = null;
     ArrayList<QueueItem> queue = new ArrayList<>();
+    
+    //do we add writes to a queue or just write on the fly?
     private static final boolean queueing = true;
     
     //amount of time to wait before first write cycle
