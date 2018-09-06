@@ -54,17 +54,17 @@ public class DomsPlayer extends Player
     //will be THE empty tile in the row of 4
     private int forceMove(int[][] board)
     {
-        //System.out.println("forceMove(" + Arrays.deepToString(board) + ") called");
+        //ConnectAI.log(Level.INFO, "forceMove(" + Arrays.deepToString(board) + ") called");
         int forceLose = -1;
         
         for(int i = 0; i < board.length - 3; i++)
         {
-            //System.out.println("Moved to next x ordinate");
+            //ConnectAI.log(Level.INFO, "Moved to next x ordinate");
             for(int j = 0; j < board[i].length - 3; j++)
             {
                 //now we're moving a 4x4 grid around the board
                 //future checks will be within this grid
-                //System.out.println("Analysed one 4x4 grid");
+                //ConnectAI.log(Level.INFO, "Analysed one 4x4 grid");
                 int diagonal1 = 0;
                 int diagonal2 = 0;
                 int forceDia1 = -1;
@@ -139,51 +139,51 @@ public class DomsPlayer extends Player
                             else forceHor = -2;
                         }
                     }
-                    if(horizontal == 3 * Integer.valueOf(piece) && forceHor > -1)
+                    if(horizontal == 3 * piece && forceHor > -1)
                     {
-                        //System.out.println("DomsAI: can win with " + forceHor);
+                        //ConnectAI.log(Level.INFO, "DomsAI: can win with " + forceHor);
                         return forceHor;
                     }
-                    if(vertical == 3 * Integer.valueOf(piece))
+                    if(vertical == 3 * piece)
                     {
-                        //System.out.println("DonsAI: can win with " + String.valueOf(i + x));
+                        //ConnectAI.log(Level.INFO, "DonsAI: can win with " + String.valueOf(i + x));
                         return i + x;
                     }
-                    if(horizontal == 3 * Integer.valueOf(opponentPiece) && forceHor > -1)
+                    if(horizontal == 3 * opponentPiece && forceHor > -1)
                     {
-                        //System.out.println("DomsAI: may be forced to play in " + forceHor);
+                        //ConnectAI.log(Level.INFO, "DomsAI: may be forced to play in " + forceHor);
                         forceLose = forceHor;
                     }
-                    else if(vertical == 3 * Integer.valueOf(opponentPiece))
+                    else if(vertical == 3 * opponentPiece)
                     {
-                        //System.out.println("DomsAI: can lose with " + String.valueOf(i + x));
+                        //ConnectAI.log(Level.INFO, "DomsAI: can lose with " + String.valueOf(i + x));
                         forceLose = i + x;
                     }
                 }
                 
-                if(diagonal1 == 3 * Integer.valueOf(piece) && forceDia1 > -1)
+                if(diagonal1 == 3 * piece && forceDia1 > -1)
                 {
-                    //System.out.println("DomsAI: can win with " + forceDia1);
+                    //ConnectAI.log(Level.INFO, "DomsAI: can win with " + forceDia1);
                     return forceDia1;
                 }
-                if(diagonal2 == 3 * Integer.valueOf(piece) && forceDia1 > -1)
+                if(diagonal2 == 3 * piece && forceDia1 > -1)
                 {
-                    //System.out.println("DomsAI: can win with " + forceDia2);
+                    //ConnectAI.log(Level.INFO, "DomsAI: can win with " + forceDia2);
                     return forceDia2;
                 }
-                if(diagonal1 == 3 * Integer.valueOf(opponentPiece) && forceDia1 > -1)
+                if(diagonal1 == 3 * opponentPiece && forceDia1 > -1)
                 {
-                    //System.out.println("DomsAI: can lose with " + forceDia1);
+                    //ConnectAI.log(Level.INFO, "DomsAI: can lose with " + forceDia1);
                     forceLose = forceDia1;
                 }
-                else if(diagonal2 == 3 * Integer.valueOf(opponentPiece) && forceDia2 > -1)
+                else if(diagonal2 == 3 * opponentPiece && forceDia2 > -1)
                 {
-                    //System.out.println("DomsAI: can lost with " + forceDia2);
+                    //ConnectAI.log(Level.INFO, "DomsAI: can lost with " + forceDia2);
                     forceLose = forceDia2;
                 }
             }
         }
-        //System.out.println("forceMove() didn't find a win and returned " + forceLose);
+        //ConnectAI.log(Level.INFO, "forceMove() didn't find a win and returned " + forceLose);
         return forceLose;
     }
     
@@ -226,16 +226,16 @@ public class DomsPlayer extends Player
     private void clickButton(int index, int[][] boardState)
     {
         ArrayList<Integer> dbBoard = toDbBoard(boardState, piece);
-       // //System.out.println("Converted :");
+       // //ConnectAI.log(Level.INFO, "Converted :");
 //        for(int i = 0; i < 7; i++)
 //        {
-//            //System.out.println("");
+//            //ConnectAI.log(Level.INFO, "");
 //            for(int j = 0; j < 6; j++)
 //            {
 //                //System.out.print(boardState[i][j] + ", ");
 //            }
 //        }
-//        //System.out.println("To : " + dbBoard);
+//        //ConnectAI.log(Level.INFO, "To : " + dbBoard);
         
         ArrayList<Integer> entry = dbBoard;
         entry.add(index);
@@ -251,7 +251,7 @@ public class DomsPlayer extends Player
     protected void takeTurn(int[][] boardState)
     {
         int forcedMove = forceMove(boardState);
-        //System.out.println("forceMove() returned : " + forcedMove);
+        //ConnectAI.log(Level.INFO, "forceMove() returned : " + forcedMove);
         if(forcedMove > -1)
         {
             clickButton(forcedMove, boardState);
@@ -368,36 +368,36 @@ public class DomsPlayer extends Player
         }
         catch(Exception e)
         {
-            //System.out.println("EXCEPTION : " + e);
+            //ConnectAI.log(Level.INFO, "EXCEPTION : " + e);
         }
         finally
         {
             //close();
-            //System.out.println("Closed connection");
+            //ConnectAI.log(Level.INFO, "Closed connection");
         }
         
         if(outArray.isEmpty() )
         {
-            //System.out.println("No recommendations from db");
+            //ConnectAI.log(Level.INFO, "No recommendations from db");
             return -1;
         }
         if(outArray.get(0).get(0) < 0.5 && !moves.isEmpty())
         {
             Random gen = new Random();
             int index = gen.nextInt(moves.size());
-            //System.out.println("Only bad winrate recordings, randomised to : " + moves.get(index));
+            //ConnectAI.log(Level.INFO, "Only bad winrate recordings, randomised to : " + moves.get(index));
             return moves.get(gen.nextInt(moves.size()));
         }
         else if(outArray.size() == 1)
         {
-            //System.out.println("Decided on move : " + outArray.get(0));
+            //ConnectAI.log(Level.INFO, "Decided on move : " + outArray.get(0));
             return (int) Math.floor(outArray.get(0).get(1));
         }
         else
         {
             Random gen = new Random();
             int index = gen.nextInt(outArray.size());
-            //System.out.println("Decided on move : " + outArray.get(index));
+            //ConnectAI.log(Level.INFO, "Decided on move : " + outArray.get(index));
             return (int) Math.floor(outArray.get(index).get(1));
         }
     }
@@ -432,15 +432,15 @@ public class DomsPlayer extends Player
 //                preparedStatement.setString(2, moveTracker.get(i).get(1));
 //                preparedStatement.setString(3, piece);
 //                
-//                //System.out.println("Preparing statement : " + preparedStatement);
+//                //ConnectAI.log(Level.INFO, "Preparing statement : " + preparedStatement);
 //                
-//                //System.out.println("Prepared select statement : " + preparedStatement);
+//                //ConnectAI.log(Level.INFO, "Prepared select statement : " + preparedStatement);
 //                resultSet = preparedStatement.executeQuery();
-////                //System.out.println("resultSet: " + resultSet.next());
+////                //ConnectAI.log(Level.INFO, "resultSet: " + resultSet.next());
 ////                resultSet.beforeFirst();
 //                if(resultSet.next())
 //                {
-//                    //System.out.println("Row for " + moveTracker.get(i).get(0) + ", " + moveTracker.get(i).get(1) + " exists. Adding to it");
+//                    //ConnectAI.log(Level.INFO, "Row for " + moveTracker.get(i).get(0) + ", " + moveTracker.get(i).get(1) + " exists. Adding to it");
 //                    preparedStatement = connect.prepareStatement("update boardStates set wins = wins + ?, losses = losses + ?, draws = draws + ? where state = ? and move = ? and piece = ?");
 //                    preparedStatement.setInt(1, wins);
 //                    preparedStatement.setInt(2, losses);
@@ -449,11 +449,11 @@ public class DomsPlayer extends Player
 //                    preparedStatement.setInt(5, Integer.valueOf(moveTracker.get(i).get(1)));
 //                    preparedStatement.setString(6, piece);
 //                    
-//                    //System.out.println("Prepared update statement : " + preparedStatement);
+//                    //ConnectAI.log(Level.INFO, "Prepared update statement : " + preparedStatement);
 //                }
 //                else
 //                {
-//                    //System.out.println("Row for " + moveTracker.get(i).get(0) + ", " + moveTracker.get(i).get(1) + " doesn't exist. Adding it");
+//                    //ConnectAI.log(Level.INFO, "Row for " + moveTracker.get(i).get(0) + ", " + moveTracker.get(i).get(1) + " doesn't exist. Adding it");
 //                    preparedStatement = connect.prepareStatement("insert into boardStates values (?, ?, ?, ?, ?, ?);");
 //                    preparedStatement.setString(1, moveTracker.get(i).get(0));
 //                    preparedStatement.setInt(2, Integer.valueOf(moveTracker.get(i).get(1)));
@@ -462,13 +462,13 @@ public class DomsPlayer extends Player
 //                    preparedStatement.setInt(5, losses);
 //                    preparedStatement.setInt(6, draws);
 //                    
-//                    //System.out.println("Prepared statement : " + preparedStatement);
+//                    //ConnectAI.log(Level.INFO, "Prepared statement : " + preparedStatement);
 //                }
 //                
 //                int update = 0;
 //                try
 //                {
-//                    //System.out.println("Trying : " + preparedStatement);
+//                    //ConnectAI.log(Level.INFO, "Trying : " + preparedStatement);
 //                    update = preparedStatement.executeUpdate();
 //                }
 //                catch(/*java.sql.SQLIntegrityConstraintViolationException*/Exception e)
@@ -481,27 +481,27 @@ public class DomsPlayer extends Player
 //                    preparedStatement.setInt(5, Integer.valueOf(moveTracker.get(i).get(1)));
 //                    preparedStatement.setString(6, piece);
 //                    
-//                    //System.out.println("EXCEPTION : " + e + " previous statement failed, trying : " + preparedStatement);
+//                    //ConnectAI.log(Level.INFO, "EXCEPTION : " + e + " previous statement failed, trying : " + preparedStatement);
 //                    update = preparedStatement.executeUpdate();
 //                }
 //                if(update == 1)
 //                {
-//                    //System.out.println("Update successful");
+//                    //ConnectAI.log(Level.INFO, "Update successful");
 //                }
 //                else
 //                {
-//                    //System.out.println("UNKNOWN ERROR: update failed");
+//                    //ConnectAI.log(Level.INFO, "UNKNOWN ERROR: update failed");
 //                }
 //            }
 //        }
 //        catch(Exception e)
 //        {
-//            //System.out.println("EXCEPTION : " + e);
+//            //ConnectAI.log(Level.INFO, "EXCEPTION : " + e);
 //        }
 //        finally
 //        {
 //            close();
-//            //System.out.println("Closed connection");
+//            //ConnectAI.log(Level.INFO, "Closed connection");
 //        }
 //    }
     
@@ -524,7 +524,7 @@ public class DomsPlayer extends Player
         }
         catch(Exception e)
         {
-           //System.out.println("EXCEPTION : " + e + " in close()");
+           //ConnectAI.log(Level.INFO, "EXCEPTION : " + e + " in close()");
         }
     }
 }
