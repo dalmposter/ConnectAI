@@ -19,12 +19,12 @@ public class ConnectAI implements Runnable {
     private static Logger logger;
     
     //final variables are hard coded attributes of the training process. Self explanatory
-    private static final int MAX_THREADS = 3;
+    private static final int MAX_THREADS = 7;
     //amount of games each thread will play before ending
-    private static final int LEARNING_GAMES = 2;
+    private static final int LEARNING_GAMES = 100000;
     private static final boolean LEARNING = true;
     //play randomly instead of from database?
-    private static final boolean RANDOM_LEARNING = false;
+    private static final boolean RANDOM_LEARNING = true;
     
     //thread identity
     public static ArrayList<ConnectAI> threads = new ArrayList<>();
@@ -286,7 +286,7 @@ public class ConnectAI implements Runnable {
         {
             ConnectAI.log(Level.SEVERE, "Thread " + threadName + " interrupted by " + e);
             ConnectAI.log(Level.SEVERE, Arrays.toString(e.getStackTrace()));
-            master.publiclyTriggeredWrite();
+            //master.publiclyTriggeredWrite();
             System.exit(0);
         }
         finally

@@ -1,0 +1,1 @@
+SELECT (SUM(win) / (SUM(win) + SUM(loss))) * 100 as winrate FROM games WHERE id > (SELECT MAX(id) FROM games) - 5000 LIMIT 0, 10000

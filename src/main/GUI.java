@@ -1086,7 +1086,8 @@ public class GUI extends javax.swing.JFrame
         if(controller.getPlayer())
         {
             //try to make the proposed play
-            if(controller.getBoard().makePlay(column, Integer.valueOf(controller.getPlayer1().getPiece())))
+            //ConnectAI.log(Level.INFO, String.valueOf(controller.getPlayer1().getClass()));
+            if(controller.getBoard().makePlay(column, controller.getPlayer1().getPiece()))
             {
                 //successfully made play
                 success = true;
@@ -1131,7 +1132,7 @@ public class GUI extends javax.swing.JFrame
         }
         else
         {
-            if(controller.getBoard().makePlay(column, Integer.valueOf(controller.getPlayer2().getPiece())))
+            if(controller.getBoard().makePlay(column, controller.getPlayer2().getPiece()))
             {
                 //successfully made play
                 success = true;

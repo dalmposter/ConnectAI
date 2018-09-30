@@ -1,2 +1,2 @@
-SELECT SUM(win) AS Wins, SUM(loss) AS Losses, SUM(draw) AS Draws, (SUM(win) + SUM(loss) + SUM(draw)) AS games, (SUM(win) / (SUM(win) + SUM(loss))) * 100 AS winrate
+SELECT SUM(win) AS Wins, SUM(loss) AS Losses, SUM(draw) AS Draws, (SUM(win) + SUM(loss) + SUM(draw)) AS games, (SUM(win) / (SUM(win) + SUM(loss))) * 100 AS winsOverWinsPlusLosses, (SUM(draw) / (SUM(draw) + SUM(win) + SUM(draw))) * 100 AS drawsOverGames
 FROM games

@@ -218,7 +218,7 @@ public class PlayerController implements Runnable {
                 {
                     preparedStatement.setInt(j + 5, moveTracker.get(i).get(j));
                 }
-                ConnectAI.log(Level.INFO, "writeDB() about to execute : " + preparedStatement);
+                //ConnectAI.log(Level.INFO, "writeDB() about to execute : " + preparedStatement);
                 rows = preparedStatement.executeUpdate();
             }
             catch (SQLException e)
@@ -238,7 +238,7 @@ public class PlayerController implements Runnable {
                     preparedStatement.setInt(9, wins);
                     preparedStatement.setInt(10, losses);
                     preparedStatement.setInt(11, draws);
-                    ConnectAI.log(Level.INFO, "writeDB() about to execute : " + preparedStatement);
+                    //ConnectAI.log(Level.INFO, "writeDB() about to execute : " + preparedStatement);
                     rows = preparedStatement.executeUpdate();
                 }
                 catch (SQLException f)
@@ -263,7 +263,7 @@ public class PlayerController implements Runnable {
                     preparedStatement.setInt(9, wins);
                     preparedStatement.setInt(10, losses);
                     preparedStatement.setInt(11, draws);
-                    ConnectAI.log(Level.INFO, "writeDB() about to execute : " + preparedStatement);
+                    //ConnectAI.log(Level.INFO, "writeDB() about to execute : " + preparedStatement);
                     preparedStatement.executeUpdate();
                 }
                 catch(Exception e)
@@ -280,7 +280,7 @@ public class PlayerController implements Runnable {
             else if(losses > 0) preparedStatement = connect.prepareStatement("INSERT INTO games (loss) VALUES (1)");
             else preparedStatement = connect.prepareStatement("INSERT INTO games (draw) VALUES (1)");
             
-            ConnectAI.log(Level.INFO, "About to execute : " + preparedStatement);
+            //ConnectAI.log(Level.INFO, "About to execute : " + preparedStatement);
             preparedStatement.executeUpdate();
         }
         catch(Exception e)
